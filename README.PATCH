@@ -519,3 +519,8 @@ conversation on port 587 caused by permission problems.
 2011.10.06
 -qmail-remote.c: fixed. It was not going into tls on authentication (thanks to Krzysztof Gajdemski)
 -force-tls now quits if the starttls command is not provided when required (thanks to Jacekalex)
+
+2022.02.24
+-qmail-remote.c: Add redis support for handling failed tls connection. Not complted yet.
+Fixed all compile time warning.
+
