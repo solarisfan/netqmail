@@ -1,0 +1,814 @@
+( cat warn-auto.sh; \
+echo CC=\'`head -1 conf-cc`\'; \
+echo LD=\'`head -1 conf-ld`\' \
+) > auto-ccld.sh
+cat auto-ccld.sh make-load.sh > make-load
+chmod 755 make-load
+cat auto-ccld.sh find-systype.sh > find-systype
+chmod 755 find-systype
+./find-systype > systype
+( cat warn-auto.sh; ./make-load "`cat systype`" ) > load
+chmod 755 load
+cat auto-ccld.sh make-compile.sh > make-compile
+chmod 755 make-compile
+( cat warn-auto.sh; ./make-compile "`cat systype`" ) > \
+compile
+chmod 755 compile
+( ( ./compile tryvfork.c && ./load tryvfork ) >/dev/null \
+2>&1 \
+&& cat fork.h2 || cat fork.h1 ) > fork.h
+rm -f tryvfork.o tryvfork
+./compile qmail-local.c
+./compile constmap.c
+./compile control.c
+( ( ./compile tryulong32.c && ./load tryulong32 && \
+./tryulong32 ) >/dev/null 2>&1 \
+&& cat uint32.h2 || cat uint32.h1 ) > uint32.h
+rm -f tryulong32.o tryulong32
+./compile rcpthosts.c
+./compile srs.c
+cat auto-ccld.sh make-makelib.sh > make-makelib
+chmod 755 make-makelib
+( cat warn-auto.sh; ./make-makelib "`cat systype`" ) > \
+makelib
+chmod 755 makelib
+./compile cdb_hash.c
+./compile cdb_unpack.c
+./compile cdb_seek.c
+./makelib cdb.a cdb_hash.o cdb_unpack.o cdb_seek.o
+./compile qmail.c
+./compile quote.c
+./compile now.c
+./compile gfrom.c
+./compile myctime.c
+./compile slurpclose.c
+./compile case_diffb.c
+./compile case_diffs.c
+./compile case_lowerb.c
+./compile case_lowers.c
+./compile case_starts.c
+./makelib case.a case_diffb.o case_diffs.o case_lowerb.o \
+case_lowers.o case_starts.o
+./compile getln.c
+./compile getln2.c
+./makelib getln.a getln.o getln2.o
+./compile subgetopt.c
+./compile sgetopt.c
+./makelib getopt.a subgetopt.o sgetopt.o
+./compile sig_alarm.c
+( ( ./compile trysgprm.c && ./load trysgprm ) >/dev/null \
+2>&1 \
+&& echo \#define HASSIGPROCMASK 1 || exit 0 ) > hassgprm.h
+rm -f trysgprm.o trysgprm
+./compile sig_block.c
+( ( ./compile trysgact.c && ./load trysgact ) >/dev/null \
+2>&1 \
+&& echo \#define HASSIGACTION 1 || exit 0 ) > hassgact.h
+rm -f trysgact.o trysgact
+./compile sig_catch.c
+./compile sig_pause.c
+./compile sig_pipe.c
+./compile sig_child.c
+./compile sig_hup.c
+./compile sig_term.c
+./compile sig_bug.c
+./compile sig_misc.c
+./makelib sig.a sig_alarm.o sig_block.o sig_catch.o \
+sig_pause.o sig_pipe.o sig_child.o sig_hup.o sig_term.o \
+sig_bug.o sig_misc.o
+./compile open_append.c
+./compile open_excl.c
+./compile open_read.c
+./compile open_trunc.c
+./compile open_write.c
+./makelib open.a open_append.o open_excl.o open_read.o \
+open_trunc.o open_write.o
+./compile seek_cur.c
+./compile seek_end.c
+./compile seek_set.c
+./compile seek_trunc.c
+./makelib seek.a seek_cur.o seek_end.o seek_set.o \
+seek_trunc.o
+( ( ./compile tryflock.c && ./load tryflock ) >/dev/null \
+2>&1 \
+&& echo \#define HASFLOCK 1 || exit 0 ) > hasflock.h
+rm -f tryflock.o tryflock
+./compile lock_ex.c
+./compile lock_exnb.c
+./compile lock_un.c
+./makelib lock.a lock_ex.o lock_exnb.o lock_un.o
+./compile fd_copy.c
+./compile fd_move.c
+./makelib fd.a fd_copy.o fd_move.o
+( ( ./compile trywaitp.c && ./load trywaitp ) >/dev/null \
+2>&1 \
+&& echo \#define HASWAITPID 1 || exit 0 ) > haswaitp.h
+rm -f trywaitp.o trywaitp
+./compile wait_pid.c
+./compile wait_nohang.c
+./makelib wait.a wait_pid.o wait_nohang.o
+./compile env.c
+./compile envread.c
+./makelib env.a env.o envread.o
+./compile stralloc_eady.c
+./compile stralloc_pend.c
+./compile stralloc_copy.c
+./compile stralloc_opys.c
+./compile stralloc_opyb.c
+./compile stralloc_cat.c
+./compile stralloc_cats.c
+./compile stralloc_catb.c
+./compile stralloc_arts.c
+./makelib stralloc.a stralloc_eady.o stralloc_pend.o \
+stralloc_copy.o stralloc_opys.o stralloc_opyb.o \
+stralloc_cat.o stralloc_cats.o stralloc_catb.o \
+stralloc_arts.o
+./compile alloc.c
+./compile alloc_re.c
+./makelib alloc.a alloc.o alloc_re.o
+./compile strerr_sys.c
+./compile strerr_die.c
+./makelib strerr.a strerr_sys.o strerr_die.o
+./compile substdio.c
+./compile substdi.c
+./compile substdo.c
+./compile subfderr.c
+subfderr.c:6:1: warning: initialization from incompatible pointer type [enabled by default]
+ static substdio it = SUBSTDIO_FDBUF(write,2,subfd_errbuf,256);
+ ^
+subfderr.c:6:1: warning: (near initialization for ‘it.op’) [enabled by default]
+./compile subfdout.c
+subfdout.c:6:1: warning: initialization from incompatible pointer type [enabled by default]
+ static substdio it = SUBSTDIO_FDBUF(write,1,subfd_outbuf,SUBSTDIO_OUTSIZE);
+ ^
+subfdout.c:6:1: warning: (near initialization for ‘it.op’) [enabled by default]
+./compile subfdouts.c
+subfdouts.c:6:1: warning: initialization from incompatible pointer type [enabled by default]
+ static substdio it = SUBSTDIO_FDBUF(write,1,subfd_outbufsmall,256);
+ ^
+subfdouts.c:6:1: warning: (near initialization for ‘it.op’) [enabled by default]
+./compile subfdin.c
+./compile subfdins.c
+./compile substdio_copy.c
+./makelib substdio.a substdio.o substdi.o substdo.o \
+subfderr.o subfdout.o subfdouts.o subfdin.o subfdins.o \
+substdio_copy.o
+./compile error.c
+./compile error_str.c
+./compile error_temp.c
+./makelib error.a error.o error_str.o error_temp.o
+./compile str_len.c
+./compile str_diff.c
+./compile str_diffn.c
+./compile str_cpy.c
+./compile str_cpyb.c
+./compile str_chr.c
+./compile str_rchr.c
+./compile str_start.c
+./compile byte_chr.c
+./compile byte_rchr.c
+./compile byte_cspn.c
+./compile byte_rcspn.c
+./compile byte_diff.c
+./compile byte_copy.c
+./compile byte_cr.c
+./compile byte_zero.c
+./makelib str.a str_len.o str_diff.o str_diffn.o str_cpy.o str_cpyb.o \
+  	str_chr.o str_rchr.o str_start.o byte_chr.o byte_rchr.o byte_cspn.o \
+byte_rcspn.o byte_diff.o byte_copy.o byte_cr.o byte_zero.o
+./compile fmt_str.c
+./compile fmt_strn.c
+./compile fmt_uint.c
+./compile fmt_uint0.c
+./compile fmt_ulong.c
+./compile scan_ulong.c
+./compile scan_8long.c
+./makelib fs.a fmt_str.o fmt_strn.o fmt_uint.o fmt_uint0.o \
+fmt_ulong.o scan_ulong.o scan_8long.o
+./compile datetime.c
+./compile datetime_un.c
+./makelib datetime.a datetime.o datetime_un.o
+./compile auto-str.c
+auto-str.c:6:1: warning: initialization from incompatible pointer type [enabled by default]
+ substdio ss1 = SUBSTDIO_FDBUF(write,1,buf1,sizeof(buf1));
+ ^
+auto-str.c:6:1: warning: (near initialization for ‘ss1.op’) [enabled by default]
+auto-str.c:8:6: warning: conflicting types for built-in function ‘puts’ [enabled by default]
+ void puts(s)
+      ^
+./load auto-str substdio.a error.a str.a 
+./auto-str auto_qmail `head -1 conf-qmail` > auto_qmail.c
+./compile auto_qmail.c
+./compile auto-int8.c
+auto-int8.c:8:1: warning: initialization from incompatible pointer type [enabled by default]
+ substdio ss1 = SUBSTDIO_FDBUF(write,1,buf1,sizeof(buf1));
+ ^
+auto-int8.c:8:1: warning: (near initialization for ‘ss1.op’) [enabled by default]
+auto-int8.c:10:6: warning: conflicting types for built-in function ‘puts’ [enabled by default]
+ void puts(s)
+      ^
+./load auto-int8 substdio.a error.a str.a fs.a 
+./auto-int8 auto_patrn `head -1 conf-patrn` > auto_patrn.c
+./compile auto_patrn.c
+( ( ./compile trylsock.c && \
+./load trylsock -lsocket -lnsl ) >/dev/null 2>&1 \
+&& echo -lsocket -lnsl || exit 0 ) > socket.lib
+rm -f trylsock.o trylsock
+./compile maildirquota.c
+./compile maildirgetquota.c
+./compile maildiropen.c
+./compile maildirparsequota.c
+./compile overmaildirquota.c
+./compile strtimet.c
+./compile strpidt.c
+./load qmail-local constmap.o control.o rcpthosts.o srs.o cdb.a \
+qmail.o quote.o now.o gfrom.o myctime.o \
+slurpclose.o case.a getln.a getopt.a sig.a open.a seek.a \
+lock.a fd.a wait.a env.a stralloc.a alloc.a strerr.a \
+substdio.a error.a str.a fs.a datetime.a auto_qmail.o \
+auto_patrn.o  `cat socket.lib` maildirquota.o maildirgetquota.o \
+maildiropen.o maildirparsequota.o overmaildirquota.o strtimet.o strpidt.o \
+-I/usr/local/include -L/usr/local/lib -lsrs2
+./compile qmail-lspawn.c
+( ./compile trysysel.c >/dev/null 2>&1 \
+&& cat select.h2 || cat select.h1 ) > select.h
+rm -f trysysel.o trysysel
+./compile chkspawn.c
+./compile auto-int.c
+auto-int.c:8:1: warning: initialization from incompatible pointer type [enabled by default]
+ substdio ss1 = SUBSTDIO_FDBUF(write,1,buf1,sizeof(buf1));
+ ^
+auto-int.c:8:1: warning: (near initialization for ‘ss1.op’) [enabled by default]
+auto-int.c:10:6: warning: conflicting types for built-in function ‘puts’ [enabled by default]
+ void puts(s)
+      ^
+./load auto-int substdio.a error.a str.a fs.a 
+./auto-int auto_spawn `head -1 conf-spawn` > auto_spawn.c
+./compile auto_spawn.c
+./load chkspawn substdio.a error.a str.a fs.a auto_spawn.o 
+./chkspawn
+./compile spawn.c
+./compile chkshsgr.c
+./load chkshsgr 
+./chkshsgr || ( cat warn-shsgr; exit 1 )
+( ( ./compile tryshsgr.c \
+&& ./load tryshsgr && ./tryshsgr ) >/dev/null 2>&1 \
+&& echo \#define HASSHORTSETGROUPS 1 || exit 0 ) > \
+hasshsgr.h
+rm -f tryshsgr.o tryshsgr
+./compile prot.c
+./compile coe.c
+./compile auto-uid.c
+auto-uid.c:11:1: warning: initialization from incompatible pointer type [enabled by default]
+ substdio ss1 = SUBSTDIO_FDBUF(write,1,buf1,sizeof(buf1));
+ ^
+auto-uid.c:11:1: warning: (near initialization for ‘ss1.op’) [enabled by default]
+./load auto-uid substdio.a error.a str.a fs.a 
+./compile auto-gid.c
+auto-gid.c:11:1: warning: initialization from incompatible pointer type [enabled by default]
+ substdio ss1 = SUBSTDIO_FDBUF(write,1,buf1,sizeof(buf1));
+ ^
+auto-gid.c:11:1: warning: (near initialization for ‘ss1.op’) [enabled by default]
+./load auto-gid substdio.a error.a str.a fs.a 
+( ./auto-uid auto_uida `head -1 conf-users` \
+&&./auto-uid auto_uidd `head -2 conf-users | tail -1` \
+&&./auto-uid auto_uidl `head -3 conf-users | tail -1` \
+&&./auto-uid auto_uido `head -4 conf-users | tail -1` \
+&&./auto-uid auto_uidp `head -5 conf-users | tail -1` \
+&&./auto-uid auto_uidq `head -6 conf-users | tail -1` \
+&&./auto-uid auto_uidr `head -7 conf-users | tail -1` \
+&&./auto-uid auto_uids `head -8 conf-users | tail -1` \
+&&./auto-gid auto_gidq `head -1 conf-groups` \
+&&./auto-gid auto_gidn `head -2 conf-groups | tail -1` \
+) > auto_uids.c.tmp && mv auto_uids.c.tmp auto_uids.c
+./compile auto_uids.c
+./load qmail-lspawn spawn.o prot.o slurpclose.o coe.o \
+sig.a wait.a case.a cdb.a fd.a open.a stralloc.a alloc.a \
+substdio.a error.a str.a fs.a auto_qmail.o auto_uids.o \
+auto_spawn.o envread.o str_diffn.o
+./compile qmail-getpw.c
+./auto-str auto_break \
+"`head -1 conf-break`" > auto_break.c
+./compile auto_break.c
+./auto-str auto_usera `head -1 conf-users` > auto_usera.c
+./compile auto_usera.c
+./load qmail-getpw case.a substdio.a error.a str.a fs.a \
+auto_break.o auto_usera.o
+./compile qmail-remote.c
+qmail-remote.c:172:1: warning: initialization from incompatible pointer type [enabled by default]
+ substdio ssin = SUBSTDIO_FDBUF(read,0,inbuf,sizeof inbuf);
+ ^
+qmail-remote.c:172:1: warning: (near initialization for ‘ssin.op’) [enabled by default]
+./compile timeoutread.c
+./compile timeoutwrite.c
+./compile timeoutconn.c
+./compile tcpto.c
+./compile dns.c
+./compile ip.c
+./compile ipalloc.c
+./compile strsalloc.c
+( ./compile trysalen.c >/dev/null 2>&1 \
+&& echo \#define HASSALEN 1 || exit 0 ) > hassalen.h
+rm -f trysalen.o
+./compile ipme.c
+./compile ndelay.c
+./compile ndelay_off.c
+./makelib ndelay.a ndelay.o ndelay_off.o
+./compile base64.c
+./compile md5c.c
+./compile hmac_md5.c
+( ( ./compile tryrsolv.c && ./load tryrsolv dns.o \
+ipalloc.o strsalloc.o ip.o stralloc.a alloc.a error.a fs.a str.a \
+-lresolv `cat socket.lib` ) >/dev/null 2>&1 \
+&& echo -lresolv || exit 0 ) > dns.lib
+rm -f tryrsolv.o tryrsolv
+./compile tls.c
+./compile ssl_timeoutio.c
+./load qmail-remote control.o constmap.o timeoutread.o \
+timeoutwrite.o timeoutconn.o tcpto.o now.o dns.o ip.o \
+        tls.o ssl_timeoutio.o -L/usr/local/lib64 -lssl -lcrypto \
+ipalloc.o strsalloc.o ipme.o quote.o ndelay.a case.a sig.a open.a \
+lock.a seek.a getln.a stralloc.a alloc.a substdio.a error.a \
+        base64.o md5c.o hmac_md5.o \
+        str.a fs.a auto_qmail.o `cat dns.lib` `cat socket.lib`
+./compile qmail-rspawn.c
+./compile tcpto_clean.c
+./load qmail-rspawn spawn.o tcpto_clean.o now.o coe.o \
+sig.a open.a seek.a lock.a wait.a fd.a stralloc.a alloc.a \
+substdio.a error.a str.a auto_qmail.o auto_uids.o \
+auto_spawn.o  envread.o str_diffn.o
+./compile qmail-newmvrt.c
+./compile cdbmss.c
+./compile cdbmake_pack.c
+./compile cdbmake_hash.c
+./compile cdbmake_add.c
+./makelib cdbmake.a cdbmake_pack.o cdbmake_hash.o \
+cdbmake_add.o
+./load qmail-newmvrt cdbmss.o getln.a open.a cdbmake.a \
+seek.a case.a stralloc.a alloc.a strerr.a substdio.a \
+error.a str.a auto_qmail.o 
+( ./compile trydrent.c >/dev/null 2>&1 \
+&& cat direntry.h2 || cat direntry.h1 ) > direntry.h
+rm -f trydrent.o
+./compile qmail-clean.c
+./compile fmtqfn.c
+./auto-int auto_split `head -1 conf-split` > auto_split.c
+./compile auto_split.c
+./load qmail-clean fmtqfn.o now.o getln.a sig.a stralloc.a \
+alloc.a substdio.a error.a str.a fs.a auto_qmail.o \
+auto_split.o 
+cat channels.g \
+| sed s}NUMCHANNELS}"`head -1 conf-channels`"}g \
+> channels.h
+chmod 644 channels.h
+./compile -DEXTERNAL_TODO  qmail-send.c
+In file included from qmail-send.c:29:0:
+qsutil.h:5:13: warning: conflicting types for built-in function ‘log2’ [enabled by default]
+ extern void log2();
+             ^
+./compile qsutil.c
+In file included from qsutil.c:4:0:
+qsutil.h:5:13: warning: conflicting types for built-in function ‘log2’ [enabled by default]
+ extern void log2();
+             ^
+qsutil.c:9:15: warning: initialization from incompatible pointer type [enabled by default]
+ static struct substdio sserr = SUBSTDIO_FDBUF(write,0,errbuf,1);
+               ^
+qsutil.c:9:15: warning: (near initialization for ‘sserr.op’) [enabled by default]
+./compile newfield.c
+./compile prioq.c
+( ( ./compile trymkffo.c && ./load trymkffo ) >/dev/null \
+2>&1 \
+&& echo \#define HASMKFIFO 1 || exit 0 ) > hasmkffo.h
+rm -f trymkffo.o trymkffo
+./compile fifo.c
+( ( ./compile trynpbg1.c \
+&& ./load trynpbg1 fifo.o open.a && ./trynpbg1 ) \
+>/dev/null 2>&1 \
+&& echo \#define HASNAMEDPIPEBUG1 1 || exit 0 ) > \
+hasnpbg1.h
+rm -f trynpbg1.o trynpbg1
+./compile trigger.c
+./compile readsubdir.c
+./compile date822fmt.c
+./load qmail-send rcpthosts.o cdb.a srs.o qsutil.o control.o constmap.o newfield.o \
+prioq.o trigger.o fmtqfn.o quote.o now.o readsubdir.o \
+qmail.o date822fmt.o datetime.a case.a ndelay.a getln.a \
+wait.a seek.a fd.a sig.a open.a lock.a stralloc.a alloc.a \
+substdio.a error.a str.a fs.a auto_qmail.o auto_split.o env.a auto_spawn.o \
+-I/usr/local/include -L/usr/local/lib -lsrs2
+./compile -DEXTERNAL_TODO  qmail-start.c
+./load qmail-start prot.o fd.a auto_uids.o 
+./compile splogger.c
+( ( ./compile trysyslog.c && \
+./load trysyslog -lgen ) >/dev/null 2>&1 \
+&& echo -lgen || exit 0 ) > syslog.lib
+rm -f trysyslog.o trysyslog
+./load splogger substdio.a error.a str.a fs.a  `cat \
+syslog.lib` `cat socket.lib`
+./compile qmail-queue.c
+./compile triggerpull.c
+./compile wildmat.c
+./compile qregex.c
+qregex.c:81:1: warning: initialization from incompatible pointer type [enabled by default]
+ static substdio sserr = SUBSTDIO_FDBUF(write, 2, sserrbuf, sizeof(sserrbuf));
+ ^
+qregex.c:81:1: warning: (near initialization for ‘sserr.op’) [enabled by default]
+./load qmail-queue triggerpull.o fmtqfn.o now.o \
+        date822fmt.o wildmat.o qregex.o env.a control.o constmap.o datetime.a case.a seek.a ndelay.a open.a sig.a \
+        getln.a stralloc.a alloc.a substdio.a error.a str.a fs.a auto_qmail.o auto_split.o auto_uids.o
+./compile qmail-inject.c
+qmail-inject.c:59:6: warning: conflicting types for built-in function ‘puts’ [enabled by default]
+ void puts(s) char *s; { put(s,str_len(s)); }
+      ^
+./compile headerbody.c
+./compile hfield.c
+./compile token822.c
+./load qmail-inject rcpthosts.o cdb.a srs.o headerbody.o hfield.o newfield.o \
+quote.o now.o control.o date822fmt.o constmap.o qmail.o \
+case.a fd.a wait.a open.a getln.a sig.a getopt.a datetime.a \
+token822.o env.a stralloc.a alloc.a substdio.a error.a \
+str.a fs.a auto_qmail.o \
+-I/usr/local/include -L/usr/local/lib -lsrs2
+./compile predate.c
+./load predate datetime.a strerr.a sig.a fd.a wait.a \
+substdio.a error.a str.a fs.a 
+cat warn-auto.sh datemail.sh \
+| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+| sed s}BREAK}"`head -1 conf-break`"}g \
+| sed s}SPLIT}"`head -1 conf-split`"}g \
+> datemail
+chmod 755 datemail
+cat warn-auto.sh mailsubj.sh \
+| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+| sed s}BREAK}"`head -1 conf-break`"}g \
+| sed s}SPLIT}"`head -1 conf-split`"}g \
+> mailsubj
+chmod 755 mailsubj
+cat warn-auto.sh qmail-upq.sh \
+| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+| sed s}BREAK}"`head -1 conf-break`"}g \
+| sed s}SPLIT}"`head -1 conf-split`"}g \
+> qmail-upq
+chmod 755 qmail-upq
+./compile qmail-showctl.c
+./load qmail-showctl auto_uids.o control.o open.a getln.a \
+stralloc.a alloc.a substdio.a error.a str.a fs.a \
+auto_qmail.o auto_break.o auto_patrn.o auto_spawn.o \
+auto_split.o 
+./compile qmail-newu.c
+./load qmail-newu cdbmss.o getln.a open.a seek.a cdbmake.a \
+case.a stralloc.a alloc.a substdio.a error.a str.a \
+auto_qmail.o 
+./compile qmail-pw2u.c
+./load qmail-pw2u constmap.o control.o open.a getln.a \
+case.a getopt.a stralloc.a alloc.a substdio.a error.a str.a \
+fs.a auto_usera.o auto_break.o auto_qmail.o 
+./compile qmail-qread.c
+./load qmail-qread fmtqfn.o readsubdir.o date822fmt.o \
+datetime.a open.a getln.a stralloc.a alloc.a substdio.a \
+error.a str.a fs.a auto_qmail.o auto_split.o 
+cat warn-auto.sh qmail-qstat.sh \
+| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+| sed s}BREAK}"`head -1 conf-break`"}g \
+| sed s}SPLIT}"`head -1 conf-split`"}g \
+> qmail-qstat
+chmod 755 qmail-qstat
+./compile qmail-tcpto.c
+./load qmail-tcpto ip.o now.o open.a lock.a substdio.a \
+error.a str.a fs.a auto_qmail.o 
+./compile qmail-tcpok.c
+./load qmail-tcpok open.a lock.a strerr.a substdio.a \
+error.a str.a auto_qmail.o 
+./compile qmail-pop3d.c
+./compile commands.c
+./compile maildir.c
+./compile maildirflags.c
+./load qmail-pop3d commands.o case.a timeoutread.o \
+timeoutwrite.o maildir.o prioq.o now.o env.a strerr.a sig.a \
+open.a getln.a stralloc.a alloc.a substdio.a error.a str.a \
+fs.a  `cat socket.lib` maildirquota.o maildirgetquota.o \
+    maildirparsequota.o maildirflags.o maildiropen.o strtimet.o strpidt.o
+./compile qmail-popup.c
+qmail-popup.c:41:6: warning: conflicting types for built-in function ‘puts’ [enabled by default]
+ void puts(s) char *s;
+      ^
+./load qmail-popup commands.o timeoutread.o timeoutwrite.o \
+now.o case.a fd.a sig.a wait.a stralloc.a alloc.a \
+substdio.a error.a str.a fs.a  `cat socket.lib`
+./compile qmail-qmqpc.c
+qmail-qmqpc.c:55:1: warning: initialization from incompatible pointer type [enabled by default]
+ substdio envelope = SUBSTDIO_FDBUF(read,1,buf,sizeof buf);
+ ^
+qmail-qmqpc.c:55:1: warning: (near initialization for ‘envelope.op’) [enabled by default]
+./load qmail-qmqpc slurpclose.o timeoutread.o \
+timeoutwrite.o timeoutconn.o ip.o control.o auto_qmail.o \
+sig.a ndelay.a open.a getln.a substdio.a stralloc.a alloc.a \
+error.a str.a fs.a  `cat socket.lib`
+./compile qmail-qmqpd.c
+./compile received.c
+received.c: In function ‘received’:
+received.c:65:15: warning: assignment makes pointer from integer without a cast [enabled by default]
+   relayclient = env_get("RELAYCLIENT");
+               ^
+./load qmail-qmqpd received.o now.o date822fmt.o qmail.o \
+auto_qmail.o env.a substdio.a sig.a error.a wait.a fd.a \
+str.a datetime.a fs.a 
+./compile qmail-qmtpd.c
+./load qmail-qmtpd rcpthosts.o control.o constmap.o \
+received.o date822fmt.o now.o qmail.o cdb.a fd.a wait.a \
+datetime.a open.a getln.a sig.a case.a env.a stralloc.a \
+alloc.a substdio.a error.a str.a fs.a auto_qmail.o 
+./compile qmail-smtpd.c
+qmail-smtpd.c: In function ‘smtp_rcpt’:
+qmail-smtpd.c:1569:7: warning: incompatible implicit declaration of built-in function ‘strncpy’ [enabled by default]
+       strncpy(smtperrcode,rcptcheck_err,3);
+       ^
+./compile spf.c
+./compile policy.c `head -1 conf-policy`
+policy.c: In function ‘policy_parse’:
+policy.c:448:4: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+    free(l);
+    ^
+policy.c:487:4: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+    free(d);
+    ^
+policy.c: In function ‘policy_construct’:
+policy.c:578:4: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+    free(args);
+    ^
+policy.c:591:4: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+    free(args[i]);
+    ^
+policy.c: In function ‘policy_construct_parse_arguments’:
+policy.c:636:7: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+       free(args[i]);
+       ^
+policy.c:644:7: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+       free(args[i]);
+       ^
+policy.c:653:7: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+       free(args[i]);
+       ^
+policy.c:676:4: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+    free(args[i]);
+    ^
+policy.c: In function ‘policy_free’:
+policy.c:1143:7: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+       free(op->args[i]);
+       ^
+policy.c:1152:4: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+    free(op);
+    ^
+policy.c: In function ‘local_free’:
+policy.c:1177:4: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+    free(ol->local);
+    ^
+policy.c: In function ‘domains_free’:
+policy.c:1204:4: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+    free(od->domain);
+    ^
+./compile chkuser.c
+chkuser.c: In function ‘check_sender_address_format’:
+chkuser.c:250:18: warning: comparison between pointer and integer [enabled by default]
+   && (user->s[x] != CHKUSER_ALLOW_SENDER_CHAR_1)
+                  ^
+./load qmail-smtpd chkuser.o dns.o rcpthosts.o commands.o timeoutread.o \
+strerr.a wildmat.o qregex.o \
+timeoutwrite.o ip.o ipme.o ipalloc.o strsalloc.o control.o \
+tls.o ssl_timeoutio.o ndelay.a -L/usr/local/lib64 -lssl -lcrypto \
+constmap.o received.o date822fmt.o now.o qmail.o spf.o cdb.a \
+fd.a wait.a datetime.a getln.a open.a sig.a case.a env.a stralloc.a \
+alloc.a substdio.a error.a strerr.a str.a fs.a auto_qmail.o base64.o policy.o \
+`head -1 /home/vpopmail/etc/lib_deps` `cat dns.lib` \
+`cat socket.lib`
+/usr/bin/ld: warning: libssl.so.10, needed by /usr/lib64/mysql/libmysqlclient.so, may conflict with libssl.so.1.1
+/usr/bin/ld: warning: libcrypto.so.10, needed by /usr/lib64/mysql/libmysqlclient.so, may conflict with libcrypto.so.1.1
+./compile sendmail.c
+./load sendmail env.a getopt.a alloc.a substdio.a error.a \
+str.a auto_qmail.o 
+./compile tcp-env.c
+./compile remoteinfo.c
+./load tcp-env dns.o remoteinfo.o timeoutread.o \
+timeoutwrite.o timeoutconn.o ip.o ipalloc.o strsalloc.o case.a \
+ndelay.a sig.a env.a getopt.a stralloc.a alloc.a substdio.a error.a \
+str.a fs.a  `cat dns.lib` `cat socket.lib`
+./compile qmail-newmrh.c
+./load qmail-newmrh cdbmss.o getln.a open.a cdbmake.a \
+seek.a case.a stralloc.a alloc.a strerr.a substdio.a \
+error.a str.a auto_qmail.o 
+cat warn-auto.sh config.sh \
+| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+| sed s}BREAK}"`head -1 conf-break`"}g \
+| sed s}SPLIT}"`head -1 conf-split`"}g \
+> config
+chmod 755 config
+cat warn-auto.sh config-fast.sh \
+| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+| sed s}BREAK}"`head -1 conf-break`"}g \
+| sed s}SPLIT}"`head -1 conf-split`"}g \
+> config-fast
+chmod 755 config-fast
+./compile dnscname.c
+./compile dnsdoe.c
+./load dnscname dns.o dnsdoe.o ip.o ipalloc.o strsalloc.o stralloc.a \
+alloc.a substdio.a error.a str.a fs.a  `cat dns.lib` `cat \
+socket.lib`
+./compile dnsptr.c
+./load dnsptr dns.o dnsdoe.o ip.o ipalloc.o strsalloc.o stralloc.a \
+alloc.a substdio.a error.a str.a fs.a  `cat dns.lib` `cat \
+socket.lib`
+./compile dnsip.c
+./load dnsip dns.o dnsdoe.o ip.o ipalloc.o strsalloc.o stralloc.a \
+alloc.a substdio.a error.a str.a fs.a  `cat dns.lib` `cat \
+socket.lib`
+./compile dnsmxip.c
+./load dnsmxip dns.o dnsdoe.o ip.o ipalloc.o strsalloc.o now.o \
+stralloc.a alloc.a substdio.a error.a str.a fs.a  `cat \
+dns.lib` `cat socket.lib`
+./compile dnsfq.c
+./load dnsfq dns.o dnsdoe.o ip.o ipalloc.o strsalloc.o stralloc.a \
+alloc.a substdio.a error.a str.a fs.a  `cat dns.lib` `cat \
+socket.lib`
+./compile dnstxt.c
+./load dnstxt dns.o dnsdoe.o ip.o ipalloc.o strsalloc.o stralloc.a \
+alloc.a substdio.a error.a str.a fs.a  `cat dns.lib` `cat \
+socket.lib`
+./compile hostname.c
+./load hostname substdio.a error.a str.a  `cat dns.lib` \
+`cat socket.lib`
+./compile ipmeprint.c
+./load ipmeprint ipme.o ip.o ipalloc.o auto_qmail.o open.a getln.a \
+strsalloc.o stralloc.a alloc.a substdio.a error.a str.a fs.a \
+`cat socket.lib`
+./compile ipmetest.c
+ipmetest.c: In function ‘main’:
+ipmetest.c:20:5: warning: incompatible implicit declaration of built-in function ‘exit’ [enabled by default]
+     exit(1);
+     ^
+ipmetest.c:26:5: warning: incompatible implicit declaration of built-in function ‘exit’ [enabled by default]
+     exit(1);
+     ^
+ipmetest.c:37:3: warning: incompatible implicit declaration of built-in function ‘exit’ [enabled by default]
+   exit(0);
+   ^
+./load ipmetest ipme.o ip.o ipalloc.o auto_qmail.o open.a getln.a stralloc.a alloc.a \
+substdio.a error.a env.a str.a fs.a `cat socket.lib`
+./compile qreceipt.c
+./load qreceipt headerbody.o hfield.o quote.o token822.o \
+qmail.o getln.a fd.a wait.a sig.a env.a stralloc.a alloc.a \
+substdio.a error.a str.a auto_qmail.o scan_ulong.o
+./compile qsmhook.c
+./load qsmhook sig.a case.a fd.a wait.a getopt.a env.a \
+stralloc.a alloc.a substdio.a error.a str.a 
+./compile qbiff.c
+./load qbiff headerbody.o hfield.o getln.a env.a open.a \
+stralloc.a alloc.a substdio.a error.a str.a 
+./compile forward.c
+forward.c:24:1: warning: initialization from incompatible pointer type [enabled by default]
+ substdio ssin = SUBSTDIO_FDBUF(read,0,inbuf,sizeof inbuf);
+ ^
+forward.c:24:1: warning: (near initialization for ‘ssin.op’) [enabled by default]
+./load forward srs.o qmail.o strerr.a control.o rcpthosts.o constmap.o \
+cdb.a case.a open.a stralloc.a alloc.a getln.a \
+fd.a wait.a sig.a env.a substdio.a error.a str.a fs.a auto_qmail.o \
+-I/usr/local/include -L/usr/local/lib -lsrs2
+./compile preline.c
+preline.c:26:1: warning: initialization from incompatible pointer type [enabled by default]
+ substdio ssout = SUBSTDIO_FDBUF(write,1,outbuf,sizeof outbuf);
+ ^
+preline.c:26:1: warning: (near initialization for ‘ssout.op’) [enabled by default]
+preline.c:27:1: warning: initialization from incompatible pointer type [enabled by default]
+ substdio ssin = SUBSTDIO_FDBUF(read,0,inbuf,sizeof inbuf);
+ ^
+preline.c:27:1: warning: (near initialization for ‘ssin.op’) [enabled by default]
+./load preline strerr.a fd.a wait.a sig.a env.a getopt.a \
+substdio.a error.a str.a 
+./compile condredirect.c
+condredirect.c:28:1: warning: initialization from incompatible pointer type [enabled by default]
+ substdio ssin = SUBSTDIO_FDBUF(read,0,inbuf,sizeof inbuf);
+ ^
+condredirect.c:28:1: warning: (near initialization for ‘ssin.op’) [enabled by default]
+./load condredirect srs.o rcpthosts.o cdb.a control.o constmap.o \
+case.a getln.a stralloc.a alloc.a open.a qmail.o strerr.a fd.a sig.a \
+wait.a seek.a env.a substdio.a error.a str.a fs.a auto_qmail.o \
+-I/usr/local/include -L/usr/local/lib -lsrs2
+./compile bouncesaying.c
+./load bouncesaying strerr.a error.a substdio.a str.a \
+wait.a 
+./compile except.c
+./load except strerr.a error.a substdio.a str.a wait.a 
+./compile maildirmake.c
+./load maildirmake strerr.a substdio.a error.a str.a 
+./compile maildir2mbox.c
+./load maildir2mbox maildir.o prioq.o now.o myctime.o \
+gfrom.o lock.a getln.a env.a open.a strerr.a stralloc.a \
+alloc.a substdio.a error.a str.a fs.a datetime.a 
+./compile maildirwatch.c
+./load maildirwatch hfield.o headerbody.o maildir.o \
+prioq.o now.o getln.a env.a open.a strerr.a stralloc.a \
+alloc.a substdio.a error.a str.a 
+cat warn-auto.sh qail.sh \
+| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+| sed s}BREAK}"`head -1 conf-break`"}g \
+| sed s}SPLIT}"`head -1 conf-split`"}g \
+> qail
+chmod 755 qail
+cat warn-auto.sh elq.sh \
+| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+| sed s}BREAK}"`head -1 conf-break`"}g \
+| sed s}SPLIT}"`head -1 conf-split`"}g \
+> elq
+chmod 755 elq
+cat warn-auto.sh pinq.sh \
+| sed s}QMAIL}"`head -1 conf-qmail`"}g \
+| sed s}BREAK}"`head -1 conf-break`"}g \
+| sed s}SPLIT}"`head -1 conf-split`"}g \
+> pinq
+chmod 755 pinq
+./compile idedit.c
+./load idedit strerr.a substdio.a error.a str.a fs.a \
+wait.a open.a seek.a 
+./compile -DEXTERNAL_TODO  install-big.c
+./compile install.c
+./load install-big fifo.o install.o auto_qmail.o \
+auto_split.o auto_uids.o strerr.a substdio.a open.a error.a \
+str.a fs.a 
+./compile -DEXTERNAL_TODO  hier.c
+./load install fifo.o hier.o auto_qmail.o auto_split.o \
+auto_uids.o strerr.a substdio.a open.a error.a str.a fs.a 
+./compile `grep -h -v "^#" conf-domainkeys` dktest.c
+./compile `grep -h -v "^#" conf-domainkeys` dktrace.c
+cc    -c -o scan_xlong.o scan_xlong.c
+cc    -c -o socket_v4mappedprefix.o socket_v4mappedprefix.c
+cc    -c -o socket_v6any.o socket_v6any.c
+./load dktest scan_ulong.o dktrace.o \
+dns.o strsalloc.o ip.o error.o ipalloc.o fmt_ulong.o \
+scan_xlong.o socket_v4mappedprefix.o socket_v6any.o \
+case_diffs.o case_diffb.o fmt_str.o stralloc.a alloc.a str.a \
+../libdomainkeys-0.69/libdomainkeys.a -lcrypto `cat dns.lib`
+( ( ./compile tryulong64.c && ./load tryulong64 && \
+./tryulong64 ) >/dev/null 2>&1 \
+&& cat uint64.h1 || cat uint64.h2 ) > uint64.h
+rm -f tryulong64.o tryulong64
+./compile qmail-dk.c
+cc    -c -o mess822_ok.o mess822_ok.c
+./compile MakeArgs.c
+./load qmail-dk triggerpull.o fmtqfn.o now.o mess822_ok.o \
+date822fmt.o datetime.a seek.a ndelay.a open.a sig.a \
+subgetopt.o MakeArgs.o substdio.a error.a fs.a auto_qmail.o \
+auto_split.o auto_uids.o \
+fd.a wait.a ../libdomainkeys-0.69/libdomainkeys.a -lcrypto env.a control.o open.a getln.a \
+stralloc.a alloc.a substdio.a str.a case.a `cat dns.lib`
+./compile -DHAVE_CONFIG_H qmail-dkim.c
+qmail-dkim.c:195:0: warning: "HAVE_EVP_SHA256" redefined [enabled by default]
+ #define HAVE_EVP_SHA256
+ ^
+In file included from qmail-dkim.c:189:0:
+config.h:9:0: note: this is the location of the previous definition
+ #define HAVE_EVP_SHA256 1
+ ^
+g++ -I. -DHAVE_EVP_SHA256   -c dkimdns.cpp
+(./compile time_t_size.c && ./load time_t_size && \
+        	./time_t_size) > time_t_size.h
+rm -f time_t_size.o time_t_size
+g++ -DHAVE_EVP_SHA256 -c dkimfuncs.cpp
+g++ -I. -DHAVE_EVP_SHA256   -c dkimbase.cpp
+g++ -DHAVE_EVP_SHA256 -c dkimverify.cpp
+g++ -DHAVE_EVP_SHA256 -c dkimsign.cpp
+rm -f libdkim.a
+./makelib libdkim.a dkimfuncs.o dkimbase.o dkimsign.o dkimverify.o
+g++ -o qmail-dkim qmail-dkim.o triggerpull.o dkimdns.o fmtqfn.o now.o \
+subgetopt.o MakeArgs.o date822fmt.o datetime.a seek.a ndelay.a \
+open.a sig.a substdio.a error.a fs.a auto_qmail.o \
+auto_split.o auto_uids.o fd.a wait.a \
+../libdomainkeys-0.69/libdomainkeys.a -lcrypto env.a control.o open.a getln.a \
+stralloc.a alloc.a substdio.a str.a case.a libdkim.a `cat dns.lib`
+../libdomainkeys-0.69/libdomainkeys.a(domainkeys.o): In function `dk_sign':
+domainkeys.c:(.text+0x13c4): undefined reference to `EVP_MD_CTX_new'
+../libdomainkeys-0.69/libdomainkeys.a(domainkeys.o): In function `dk_verify':
+domainkeys.c:(.text+0x1534): undefined reference to `EVP_MD_CTX_new'
+../libdomainkeys-0.69/libdomainkeys.a(domainkeys.o): In function `dk_free':
+domainkeys.c:(.text+0x3504): undefined reference to `EVP_MD_CTX_free'
+libdkim.a(dkimsign.o): In function `CDKIMSign::CDKIMSign()':
+dkimsign.cpp:(.text+0x14c): undefined reference to `EVP_MD_CTX_new'
+dkimsign.cpp:(.text+0x181): undefined reference to `EVP_MD_CTX_new'
+dkimsign.cpp:(.text+0x1b6): undefined reference to `EVP_MD_CTX_new'
+dkimsign.cpp:(.text+0x1eb): undefined reference to `EVP_MD_CTX_new'
+dkimsign.cpp:(.text+0x220): undefined reference to `EVP_MD_CTX_new'
+libdkim.a(dkimsign.o): In function `CDKIMSign::~CDKIMSign()':
+dkimsign.cpp:(.text+0x38c): undefined reference to `EVP_MD_CTX_reset'
+dkimsign.cpp:(.text+0x39c): undefined reference to `EVP_MD_CTX_reset'
+dkimsign.cpp:(.text+0x3ac): undefined reference to `EVP_MD_CTX_reset'
+dkimsign.cpp:(.text+0x3bc): undefined reference to `EVP_MD_CTX_reset'
+dkimsign.cpp:(.text+0x3cc): undefined reference to `EVP_MD_CTX_reset'
+libdkim.a(dkimverify.o):dkimverify.cpp:(.text+0xf6): more undefined references to `EVP_MD_CTX_reset' follow
+libdkim.a(dkimverify.o): In function `SignatureInfo::SignatureInfo(bool)':
+dkimverify.cpp:(.text+0xfd): undefined reference to `EVP_MD_CTX_new'
+dkimverify.cpp:(.text+0x12b): undefined reference to `EVP_MD_CTX_reset'
+dkimverify.cpp:(.text+0x132): undefined reference to `EVP_MD_CTX_new'
+libdkim.a(dkimverify.o): In function `SignatureInfo::~SignatureInfo()':
+dkimverify.cpp:(.text+0x282): undefined reference to `EVP_MD_CTX_reset'
+dkimverify.cpp:(.text+0x2a5): undefined reference to `EVP_MD_CTX_reset'
+collect2: error: ld returned 1 exit status
+make: *** [qmail-dkim] Error 1
